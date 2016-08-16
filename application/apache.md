@@ -1,8 +1,6 @@
-# アプリケーションセキュリティ
+# Apache セキュリティ
 
-## Apache セキュリティ
-
-### アクセス制限
+## アクセス制限
   1. Order <allow/deny>
     - 許可/拒否の適用順序
 
@@ -12,7 +10,7 @@
   1. Deny from <from>
     - 拒否ホストの設定
 
-### Basic認証
+## Basic認証
   - 認証情報はhtpasswdコマンドで作成する
   - 設定には、AuthType,AuthName,AuthUserFile,Requireが必要
 
@@ -36,21 +34,21 @@
 </Directory>
 ```
 
-### .htaccess の無効化
+## .htaccess の無効化
   - `< Directory /> AllowOverride None </Directory>`
 
-### SSL
+## SSL
   - http://www.lpi.or.jp/news/event/docs/20150711_01_report_01.pdf
 
-#### サーバ証明書の作成
+### サーバ証明書の作成
 
-##### 作成フロー
+#### 作成フロー
   1. Webサーバで`openssl genrsa` コマンドで秘密鍵を生成
   1. Webサーバで`openssl req -new` コマンドで署名リクエスト(CSR)を生成
   1. CSRを認証局へ送り、認証曲の秘密鍵で署名したサーバ証明書を生成
     - `openssl ca -out <生成するサーバ証明書> ---infiles <CSRファイル>`
 
-#### 設定
+### 設定
   - `SSLCertificateFile`
   - `SSLCertificateKeyFile`
 
