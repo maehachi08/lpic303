@@ -1,18 +1,16 @@
-# 暗号化(encryption)
-
-## LPIC 303向けのメモ
-  - GPGの鍵削除に使用するコマンドは `--delete-*`、失効証明書の作成は`--gen-revoke`
-
-## GPGを使ったファイル暗号化
+# GPGを使ったファイル暗号化
 
 公開鍵と秘密鍵を使った *公開鍵暗号方式* を使用して、ファイル受け渡し時に対象ファイルを暗号化します。
 
 今回はgpgコマンドを使用して鍵の作成と管理を行ってファイル暗号化にチャレンジしてみます。
 
+## LPIC 303向けのメモ
+  - GPGの鍵削除に使用するコマンドは `--delete-*`、失効証明書の作成は`--gen-revoke`
 
-### 準備
 
-#### gpgコマンド入ってる?
+## 準備
+
+### gpgコマンド入ってる?
 
  以下コマンドでバージョン情報が表示されればgpgコマンドはインストールされています。
 
@@ -40,7 +38,7 @@ Compression: Uncompressed, ZIP, ZLIB, BZIP2
 yum install -y gnupg
 ```
 
-#### 鍵の作成
+### 鍵の作成
 
  ```sh
 gpg --gen-key
@@ -134,7 +132,7 @@ generator a better chance to gain enough entropy.
        sub   2048R/4439974A 2016-08-13
 ```
 
-#### 鍵の確認
+### 鍵の確認
 
 公開鍵と秘密鍵でオプションが異なるので注意。
 
@@ -171,7 +169,7 @@ uid                  Kazunori Maehata (test) <pachi@pachi.local>
 ssb   2048R/4439974A 2016-08-13
 ```
 
-#### 鍵の削除
+### 鍵の削除
 
 公開鍵と秘密鍵でオプションが異なるので注意。
 
@@ -187,7 +185,7 @@ gpg --delete-keys <メールアドレス>
 gpg --delete-secret-keys <メールアドレス>
 ```
 
-#### 失効証明書の作成
+### 失効証明書の作成
   - パスフレーズの漏洩/忘れ、秘密鍵の漏洩などがあった場合は対象の鍵自体を無効にする
   - 失効証明書を作成しただけでは効果はない
     - 失効証明書を有効にしたい場合は、`gpg --import`で失効証明書をインポートする
@@ -242,7 +240,7 @@ your machine might store the data and make it available to others!
 ```
 
 
-### 鍵サーバへ鍵の登録
+## 鍵サーバへ鍵の登録
 
  公開鍵をクライアントが取得するためには、鍵サーバへ公開鍵を登録する必要があります。
 
@@ -262,7 +260,7 @@ sub   2048R/4439974A 2016-08-13
 gpg: sending key 92B96AEF to hkp server keys.gnupg.net
 ```
 
-### 鍵サーバに公開鍵が登録されていることを確認する
+## 鍵サーバに公開鍵が登録されていることを確認する
 
  公開鍵が鍵サーバに登録されたことを確認します。`gpg --send-keys`から10分程度時間開けたほうがよいかもしれません。
 
@@ -278,7 +276,7 @@ gpg: searching for "pachi@pachi.local" from hkp server keys.gnupg.net
 Keys 1-1 of 1 for "pachi@pachi.local".  Enter number(s), N)ext, or Q)uit > q
 ```
 
-### 鍵サーバから公開鍵を取得する(クライアント)
+## 鍵サーバから公開鍵を取得する(クライアント)
 
  鍵サーバに登録した公開鍵をファイルを暗号化するマシン上に取得します。
 
@@ -295,7 +293,3 @@ gpg: key 92B96AEF: "Kazunori Maehata (test) <pachi@pachi.local>" not changed
 gpg: Total number processed: 1
 gpg:              unchanged: 1
 ```
-
-## cryptsetupを使った暗号化ファイルシステム
-  - LUKS(Linux Unified Key Setup)
-  - cryptsetup
