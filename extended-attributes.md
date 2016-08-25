@@ -20,8 +20,9 @@ Linuxのカーネル設定でlibattr機能が有効であれば使用可能。
   1. system
     - カーネルが主にアクセス制御リストとして使用する
   1. trusted
-    - 
+    - 信頼できるプロセスのみが利用
   1. security
+    - たとえば、SELinuxで利用
 
 ### attrパッケージ
 
@@ -62,5 +63,122 @@ setfattr -x user.version testfile
 # getfattr -d testfile 
 # file: testfile
 user.description="extended attributes test"
+```
+
+## aclパッケージ
+
+### インストール
+
+ ```sh
+yum install -y acl
+```
+
+### 拡張ACLの設定
+
+ - user01に対してtestfileファイルに対して読み書き権限を設定します。
+
+ ```sh
+setfacl -m user:<ユーザ名>:<権限> <ファイル>
+setfacl -m user:<グループ>:<権限> <ファイル>
+```
+
+ ```sh
+[root@app001 ~]# getfacl testfile
+# file: testfile
+# owner: root
+# group: root
+user::rw-
+group::r--
+other::r--
+
+[root@app001 ~]# setfacl -m user:user01:rw testfile
+[root@app001 ~]# getfacl testfile
+# file: testfile
+# owner: root
+# group: root
+user::rw-
+user:user01:rw-
+group::r--
+mask::rw-
+other::r--
+```
+
+### 拡張ACLの確認
+
+ ```sh
+getfacl testfile
+```
+
+ ```sh
+[root@app001 ~]# getfacl testfile
+# file: testfile
+# owner: root
+# group: root
+user::rw-
+user:user01:rw-
+group::r--
+mask::rw-
+other::r--
+```
+
+### 設定した拡張ACLをすべて削除
+
+ ```sh
+setfacl -b <ファイル>
+```
+
+ ```sh
+[root@app001 ~]# setfacl -m user:user01:rw testfile
+[root@app001 ~]# setfacl -m user:user02:rwx testfile
+[root@app001 ~]# setfacl -m user:user03:r testfile
+[root@app001 ~]# getfacl testfile
+# file: testfile
+# owner: root
+# group: root
+user::rw-
+user:user01:rw-
+user:user02:rwx
+user:user03:r--
+group::r--
+mask::rwx
+other::r--
+
+[root@app001 ~]# setfacl -b testfile
+[root@app001 ~]# getfacl testfile
+# file: testfile
+# owner: root
+# group: root
+user::rw-
+group::r--
+other::r--
+```
+
+### 拡張ACLの削除
+
+ ```sh
+setfacl -x user:<削除したいユーザ> <ファイル>
+```
+
+ ```sh
+[root@app001 ~]# setfacl -m user:user01:rw testfile
+[root@app001 ~]# getfacl testfile
+# file: testfile
+# owner: root
+# group: root
+user::rw-
+user:user01:rw-
+group::r--
+mask::rw-
+other::r--
+
+[root@app001 ~]# setfacl -x user:user01 testfile
+[root@app001 ~]# getfacl testfile
+# file: testfile
+# owner: root
+# group: root
+user::rw-
+group::r--
+mask::r--
+other::r--
 ```
 
