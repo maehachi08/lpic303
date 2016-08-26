@@ -1,16 +1,16 @@
-# ファイルシステムの拡張属性(extended attributes)
+# ファイルシステムの拡張属性とACL
 
-## 拡張属性への対応について
+## 拡張属性
 
-Linuxのカーネル設定でlibattr機能が有効であれば使用可能。
-  - ext2
-  - ext3
-  - ext4
-  - JFS
-  - ReiserFS
-  - XFS
+ Linuxのカーネル設定でlibattr機能が有効であれば使用可能。
+   - ext2
+   - ext3
+   - ext4
+   - JFS
+   - ReiserFS
+   - XFS
 
-## 属性の定義方法
+### 属性の定義方法
   - 属性情報は、ファイルごとに *名前* と *データ*の組みをリストで持つ。
   - *名前* には **名前空間**が必要
 
@@ -65,7 +65,7 @@ setfattr -x user.version testfile
 user.description="extended attributes test"
 ```
 
-## aclパッケージ
+## アクセス制御リスト(ACL)
 
 ### インストール
 
