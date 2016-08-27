@@ -368,3 +368,75 @@ gpg: encrypted with 2048-bit RSA key, ID 4439974A, created 2016-08-13
 maehachi08 is Maehata
 ```
 
+## 暗号化ファイルの署名/検証
+
+ 暗号化して読めなくても、その読めない文字を改ざんされてしまっては、正しく復号できません。暗号化された状態から一切の改ざんがされていないことを保証する仕組みとして、暗号化ファイルに対して署名を行うことで、復号者は署名を検証し、改ざんがされていないことを確認できます。
+
+### 署名
+ - 署名は `-s(--sign) オプション`
+
+  1. クリア署名
+    - `--clearsign` オプション
+    - 署名: `gpg --clearsign -s -a <署名対象のファイル>`
+    - 検証: `gpg --verify <署名済みのファイル>`
+    - 暗号化ファイルに対する署名を暗号化ファイル内に記載します
+    - 相手に送るファイルは暗号化ファイル(署名済み)1つで済みます
+  1. 分離署名
+    - `--detach-sign (-b)` オプション
+    - 署名: `gpg --detach-sign -a <署名対象のファイル>`
+    - 検証: `gpg --verify <署名ファイル> <署名対象のファイル>`
+    - 暗号化ファイルに対する署名を暗号化ファイルとは別のファイルに記載します
+    - 相手に送るファイルは暗号化ファイルと署名ファイルの2つとなります
+
+#### クリア署名
+ 1. ファイル暗号化側: 暗号化したファイルに署名を付加する
+
+ ```sh
+gpg --clearsign -s -a testfile.encrypt
+ls -l testfile.encrypt.asc
+```
+ 1. `testfile.encrypt.asc` を相手に送る
+ 1. 暗号化ファイルの署名を検証する
+
+ ```sh
+gpg --verify testfile.encrypt.asc
+```
+
+##### 改ざんされていた場合
+
+ オリジナルをバックアップ(cp)した状態で暗号化されているファイルから適当に文字を変更してみます。
+
+ ```sh
+cp -p testfile.encrypt.asc{,.original}
+vim testfile.encrypt.asc
+gpg --verify testfile.encrypt.asc
+gpg --verify testfile.encrypt.asc.original 
+```
+
+ ```sh
+[root@app001 ~]# cp -p testfile.encrypt.asc testfile.encrypt.asc.original
+[root@app001 ~]# vim testfile.encrypt.asc
+[root@app001 ~]# gpg --verify testfile.encrypt.asc
+gpg: Signature made Sat Aug 27 20:19:36 2016 JST using RSA key ID 92B96AEF
+gpg: BAD signature from "Kazunori Maehata (test) <pachi@pachi.local>"
+[root@app001 ~]# gpg --verify testfile.encrypt.asc.original 
+gpg: Signature made Sat Aug 27 20:19:36 2016 JST using RSA key ID 92B96AEF
+gpg: Good signature from "Kazunori Maehata (test) <pachi@pachi.local>"
+```
+
+ 意図的に改ざんしたファイルの検証で **gpg: BAD signature** と表示されました。
+
+#### 分離署名
+ 1. ファイル暗号化側: 暗号化したファイルに署名を付加する
+
+ ```sh
+gpg --detach-sign -a testfile.encrypt
+ls -l testfile.encrypt.asc
+```
+ 1. `testfile.encrypt.asc` を相手に送る
+ 1. 暗号化ファイルの署名を検証する
+
+ ```sh
+gpg --verify testfile.encrypt.asc testfile.encrypt
+```
+
