@@ -293,3 +293,78 @@ gpg: key 92B96AEF: "Kazunori Maehata (test) <pachi@pachi.local>" not changed
 gpg: Total number processed: 1
 gpg:              unchanged: 1
 ```
+
+## GPGを利用したファイルの暗号化/復号化
+
+### 公開鍵をクライアント(ファイルを暗号化するホスト)へ渡す
+
+ GPGを利用したファイルの暗号化を行う場合、ファイル送信元にて公開鍵を使って暗号化します。暗号化されたファイルをファイル送信先へ送り、受信したホストでは秘密鍵を使って復号化します。
+
+ 1. 公開鍵をファイルとしてインポート
+
+ ```sh
+gpg -a --export pachi@pachi.local > pachi@pachi.local.pub
+```
+
+ 1. クライアントへ公開鍵を渡す
+ 1. クライアントで公開鍵をインポートする
+    - インポートした公開鍵を信用する設定をおこなう
+      - `gpg --edit-key <uid>` でtrustを入力する
+
+ ```sh
+gpg --import pachi@pachi.local.pub
+gpg --edit-key pachi@pachi.local
+gpg> trust
+Your decision? 5
+```
+
+### 暗号化
+
+ ```sh
+gpg -e -o testfile.encrypt -r pachi@pachi.local testfile
+```
+
+ ```sh
+[root@app001 ~]# cat testfile
+maehachi08 is Maehata
+[root@app001 ~]# gpg --list-keys
+/root/.gnupg/pubring.gpg
+------------------------
+pub   2048R/92B96AEF 2016-08-13
+uid                  Kazunori Maehata (test) <pachi@pachi.local>
+sub   2048R/4439974A 2016-08-13
+
+[root@app001 ~]# gpg -e -c pachi@pachi.local testfile
+usage: gpg [options] --symmetric --encrypt [filename]
+[root@app001 ~]# gpg -e -o testfile.encrypt -r pachi@pachi.local testfile
+[root@app001 ~]# cat testfile
+maehachi08 is Maehata
+[root@app001 ~]# cat testfile.encrypt
+#
+ ##6|D9#J#[######]##################\###e"###'μ####O##]b#
+                                                          ###   ?#9ǋŮ#########G###4;7H#########/#o#########UՋ########A#######wy######z(#}##h#}|!###BB8s#8#}#k##1#
+                                                                #####m/######^(##O#########S#########Z՘#####X######%#########'7H#######################W#########i|6#
+#~#Q#l####q#-3######################### g###w###]0;
+```
+
+### 復号化
+
+ ```sh
+gpg -o testfile.decrypt -r pachi@pachi.local testfile.encrypt
+```
+
+ ```sh
+[root@app001 ~]# gpg -o testfile.decrypt -r pachi@pachi.local testfile.encrypt 
+
+You need a passphrase to unlock the secret key for
+user: "Kazunori Maehata (test) <pachi@pachi.local>"
+2048-bit RSA key, ID 4439974A, created 2016-08-13 (main key ID 92B96AEF)
+
+gpg: encrypted with 2048-bit RSA key, ID 4439974A, created 2016-08-13
+      "Kazunori Maehata (test) <pachi@pachi.local>"
+[root@app001 ~]# 
+[root@app001 ~]# 
+[root@app001 ~]# cat testfile.decrypt 
+maehachi08 is Maehata
+```
+
