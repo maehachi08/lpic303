@@ -209,3 +209,26 @@ restorecon reset /root/testfile2 context system_u:object_r:httpd_config_t:s0->sy
 -rw-r--r--. root root system_u:object_r:admin_home_t:s0 testfile2
 ```
 
+## SELinux関連のコマンド
+
+ 1. sestatus
+   - `yum install -y policycoreutils`
+   - SELinuxの詳細な情報を確認できる
+
+ ```sh
+[root@app001 ~]# sestatus 
+SELinux status:                 enabled
+SELinuxfs mount:                /sys/fs/selinux
+SELinux root directory:         /etc/selinux
+Loaded policy name:             targeted
+Current mode:                   enforcing
+Mode from config file:          enforcing
+Policy MLS status:              enabled
+Policy deny_unknown status:     allowed
+Max kernel policy version:      28
+```
+
+ 1. newrole
+   - `yum install -y policycoreutils-newrole`
+   - SELinuxロールを切り替える
+
