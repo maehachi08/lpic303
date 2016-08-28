@@ -9,6 +9,15 @@
 
 ## Postfix メールセキュリティ
 
+### TLS
+  - `/etc/postfix/main.cf`
+    - `smtpd_use_tls` : starttlsコマンドの有効化
+    - `smtpd_tls_cert_file` : RSA証明書
+    - `smtpd_tls_key_file` : RSA秘密鍵
+    - `smtpd_tls_dkey_file` : DSA秘密鍵
+    - `smtpd_tls_dcert_file` : DSA証明書
+    - `smtpd_enforce_tls` : TLS暗号化していないメールを受け付けない
+
 ### 1. chroot環境でデーモンを起動する
   - `/etc/postfix/master.cf` にて設定する
   - Postfixが攻撃された時の影響範囲を狭めることが可能
